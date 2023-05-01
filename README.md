@@ -38,3 +38,9 @@ This will create the CloudFormation stack containing a DynamoDB table and IAM ro
 # USAGE
 
 todo
+
+# APP DETAILS
+
+Using Cobra for managing CLI commands and flags:
+
+https://github.com/spf13/cobra/blob/main/user_guide.md
