@@ -1,6 +1,6 @@
 # Plan
 
-- [ ] Cloud infrastructure
+- [x] Cloud infrastructure
 - [ ] CLI app
 - [ ] Mobile app
 
@@ -10,8 +10,5 @@
 - [x] Scaffold go cli app
 - [x] Test DB access from cli app
 - [x] Create a proper insert function
-- [ ] Add basic cli interface
-
-# Wishlist
-
-- 
+- [x] Add basic cli interface
+- [ ] Basic commands and entry_types loading

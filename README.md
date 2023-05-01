@@ -1,6 +1,4 @@
-vīta
-
-_latin - life_
+vīta (_latin - life_)
 
 Record everything about your life. Currently using DynamoDB for data storage / retrieval.
 
