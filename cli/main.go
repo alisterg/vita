@@ -1,25 +1,31 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	// "github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"vita/application"
 )
 
-func main() {
-	fmt.Println("Hello, World!")
-}
+var tableName string = "lifedata"
 
-func createSession() aws.Config {
-	sess, err := config.LoadDefaultConfig(context.TODO(),
-		config.WithRegion("<your AWS region>"),
-	)
+func main() {
+	// example fetching and printing arbitrary data
+
+	client, err := application.GetDbClient()
 	if err != nil {
-		// handle error
+		fmt.Println("Failed to create DynamoDB client")
+		return
 	}
 
-	return sess
+	result, err := application.QueryTable(client, tableName, "type", "book")
+	if err != nil {
+		fmt.Println("Failed to query table")
+		return
+	}
+
+	for _, item := range result.Items {
+		for k, v := range item {
+			fmt.Printf("Result was %v: %v \n", k, v)
+		}
+	}
 }
