@@ -2,7 +2,11 @@ vīta (_latin - life_)
 
 Record everything about your life. Currently using DynamoDB for data storage / retrieval.
 
-# SETUP
+# USAGE
+
+todo
+
+# DEVELOPMENT
 
 ## Prerequisites
 
@@ -33,11 +37,7 @@ In the `infra` directory:
 
 This will create the CloudFormation stack containing a DynamoDB table and IAM role to access it.
 
-# USAGE
-
-todo
-
-# APP DETAILS
+## App details
 
 Using Cobra for managing CLI commands and flags:
 
