@@ -2,5 +2,5 @@ package core
 
 type EntryItem struct {
 	ItemType string
-	ItemData []string
+	ItemData map[string]string
 }

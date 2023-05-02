@@ -1,15 +1,16 @@
 package main
 
 import (
-	"vita/commands"
+	"github.com/spf13/cobra"
 )
 
 func main() {
-	commands.Execute()
+
+	var rootCmd = &cobra.Command{Use: "vita"}
+	rootCmd.AddCommand(cmdAdd)
+	rootCmd.Execute()
 
 	// example fetching and printing arbitrary data
-
-	// tableName := "lifedata"
 
 	// client, err := application.GetDbClient()
 	// if err != nil {

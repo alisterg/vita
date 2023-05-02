@@ -14,6 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
+var tableName = "lifedata"
+
 func GetDbClient() (*dynamodb.Client, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
@@ -23,10 +25,11 @@ func GetDbClient() (*dynamodb.Client, error) {
 	return dynamodb.NewFromConfig(cfg), nil
 }
 
-func InsertItem(client *dynamodb.Client, tableName string, item core.EntryItem) error {
+func InsertEntryItem(client *dynamodb.Client, item core.EntryItem) error {
 	itemData, err := json.Marshal(item.ItemData)
 	if err != nil {
 		fmt.Printf("Couldn't serialise item data: %v:\n %v", err, item.ItemData)
+		return err
 	}
 
 	item1 := map[string]types.AttributeValue{
@@ -40,15 +43,18 @@ func InsertItem(client *dynamodb.Client, tableName string, item core.EntryItem) 
 		Item:      item1,
 	}
 
-	client.PutItem(context.TODO(), input)
+	_, err2 := client.PutItem(context.TODO(), input)
+	if err2 != nil {
+		return err2
+	}
 
 	fmt.Println("Item added to the table.")
 	return nil
 }
 
-func QueryTable(client *dynamodb.Client, tableName string, partitionKey string, partitionValue string) (*dynamodb.QueryOutput, error) {
+func GenericQuery(client *dynamodb.Client, table string, partitionKey string, partitionValue string) (*dynamodb.QueryOutput, error) {
 	input := &dynamodb.QueryInput{
-		TableName:              aws.String(tableName),
+		TableName:              aws.String(table),
 		KeyConditionExpression: aws.String("#pk = :pkval"),
 		ExpressionAttributeNames: map[string]string{
 			"#pk": partitionKey,

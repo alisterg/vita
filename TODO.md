@@ -11,4 +11,5 @@
 - [x] Test DB access from cli app
 - [x] Create a proper insert function
 - [x] Add basic cli interface
-- [ ] Basic commands and entry_types loading
+- [x] Basic commands and entry_types loading
+- [ ] Refactor
