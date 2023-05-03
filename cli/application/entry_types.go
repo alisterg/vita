@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func GetEntryTypes() (interface{}, error) {
+func loadEntryTypes() (interface{}, error) {
 	file, err := os.Open("entry_types.json")
 	if err != nil {
 		return nil, errors.New("couldn't load entry_types.json")
@@ -28,8 +28,8 @@ func GetEntryTypes() (interface{}, error) {
 	return result, nil
 }
 
-func GetPrompts(entryType string) ([]interface{}, error) {
-	entryTypes, err := GetEntryTypes()
+func LoadPrompts(entryType string) ([]interface{}, error) {
+	entryTypes, err := loadEntryTypes()
 	if err != nil {
 		return nil, err
 	}

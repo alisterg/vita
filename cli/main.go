@@ -1,14 +1,11 @@
 package main
 
 import (
-	"github.com/spf13/cobra"
+	"vita/presentation"
 )
 
 func main() {
-
-	var rootCmd = &cobra.Command{Use: "vita"}
-	rootCmd.AddCommand(cmdAdd)
-	rootCmd.Execute()
+	presentation.RootCmd.Execute()
 
 	// example fetching and printing arbitrary data
 

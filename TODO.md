@@ -12,4 +12,8 @@
 - [x] Create a proper insert function
 - [x] Add basic cli interface
 - [x] Basic commands and entry_types loading
-- [ ] Refactor
+- [x] Refactor
+- [ ] 'show' command
+- [ ] 'update' command
+- [ ] 'delete' command
+- [ ] Routines
