@@ -2,6 +2,7 @@ package presentation
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -29,9 +30,10 @@ var CmdAdd = &cobra.Command{
 			return
 		}
 
-		insertVal := core.EntryItem{
+		insertVal := core.Entry{
 			ItemType: entryType,
 			ItemData: RunAddEntryPrompts(prompts),
+			ItemDate: time.Now().Unix(),
 		}
 
 		client, err := application.GetDbClient()
@@ -40,6 +42,6 @@ var CmdAdd = &cobra.Command{
 			return
 		}
 
-		application.InsertEntryItem(client, insertVal)
+		application.InsertEntry(client, insertVal)
 	},
 }

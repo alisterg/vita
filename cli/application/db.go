@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"vita/core"
 
@@ -25,22 +24,22 @@ func GetDbClient() (*dynamodb.Client, error) {
 	return dynamodb.NewFromConfig(cfg), nil
 }
 
-func InsertEntryItem(client *dynamodb.Client, item core.EntryItem) error {
+func InsertEntry(client *dynamodb.Client, item core.Entry) error {
 	itemData, err := json.Marshal(item.ItemData)
 	if err != nil {
 		fmt.Printf("Couldn't serialise item data: %v:\n %v", err, item.ItemData)
 		return err
 	}
 
-	item1 := map[string]types.AttributeValue{
+	insertObj := map[string]types.AttributeValue{
 		"type": &types.AttributeValueMemberS{Value: item.ItemType},
-		"date": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", time.Now().Unix())},
+		"date": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", item.ItemDate)},
 		"data": &types.AttributeValueMemberS{Value: string(itemData)},
 	}
 
 	input := &dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
-		Item:      item1,
+		Item:      insertObj,
 	}
 
 	_, err2 := client.PutItem(context.TODO(), input)
@@ -48,7 +47,7 @@ func InsertEntryItem(client *dynamodb.Client, item core.EntryItem) error {
 		return err2
 	}
 
-	fmt.Println("Item added to the table.")
+	fmt.Println("Item added")
 	return nil
 }
 

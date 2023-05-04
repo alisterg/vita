@@ -1,6 +1,7 @@
 package core
 
-type EntryItem struct {
+type Entry struct {
 	ItemType string
 	ItemData map[string]string
+	ItemDate int64
 }
