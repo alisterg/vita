@@ -1,7 +1,7 @@
 package core
 
 type Entry struct {
-	ItemType string
-	ItemData map[string]string
-	ItemDate int64
+	EntryType string
+	Data      map[string]string
+	CreatedAt int64
 }

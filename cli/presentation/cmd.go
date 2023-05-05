@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"vita/application"
+	"vita/app"
 	"vita/core"
 )
 
@@ -24,24 +24,24 @@ var CmdAdd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		entryType := args[0]
 
-		prompts, err := application.LoadPrompts(entryType)
+		prompts, err := app.LoadPrompts(entryType)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 
 		insertVal := core.Entry{
-			ItemType: entryType,
-			ItemData: RunAddEntryPrompts(prompts),
-			ItemDate: time.Now().Unix(),
+			EntryType: entryType,
+			Data:      RunAddEntryPrompts(prompts),
+			CreatedAt: time.Now().Unix(),
 		}
 
-		client, err := application.GetDbClient()
+		client, err := app.GetDbClient()
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 
-		application.InsertEntry(client, insertVal)
+		app.InsertEntry(client, insertVal)
 	},
 }

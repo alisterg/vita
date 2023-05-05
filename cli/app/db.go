@@ -1,4 +1,4 @@
-package application
+package app
 
 import (
 	"context"
@@ -24,17 +24,17 @@ func GetDbClient() (*dynamodb.Client, error) {
 	return dynamodb.NewFromConfig(cfg), nil
 }
 
-func InsertEntry(client *dynamodb.Client, item core.Entry) error {
-	itemData, err := json.Marshal(item.ItemData)
+func InsertEntry(client *dynamodb.Client, entry core.Entry) error {
+	entryDataJson, err := json.Marshal(entry.Data)
 	if err != nil {
-		fmt.Printf("Couldn't serialise item data: %v:\n %v", err, item.ItemData)
+		fmt.Printf("Couldn't serialise item data: %v:\n %v", err, entry.Data)
 		return err
 	}
 
 	insertObj := map[string]types.AttributeValue{
-		"type": &types.AttributeValueMemberS{Value: item.ItemType},
-		"date": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", item.ItemDate)},
-		"data": &types.AttributeValueMemberS{Value: string(itemData)},
+		"type": &types.AttributeValueMemberS{Value: entry.EntryType},
+		"date": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", entry.CreatedAt)},
+		"data": &types.AttributeValueMemberS{Value: string(entryDataJson)},
 	}
 
 	input := &dynamodb.PutItemInput{
@@ -51,9 +51,9 @@ func InsertEntry(client *dynamodb.Client, item core.Entry) error {
 	return nil
 }
 
-func GenericQuery(client *dynamodb.Client, table string, partitionKey string, partitionValue string) (*dynamodb.QueryOutput, error) {
+func Query(client *dynamodb.Client, partitionKey string, partitionValue string) (*dynamodb.QueryOutput, error) {
 	input := &dynamodb.QueryInput{
-		TableName:              aws.String(table),
+		TableName:              aws.String(tableName),
 		KeyConditionExpression: aws.String("#pk = :pkval"),
 		ExpressionAttributeNames: map[string]string{
 			"#pk": partitionKey,
