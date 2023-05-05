@@ -2,14 +2,14 @@ Resources:
   LifeDataTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: lifedata
+      TableName: LifeDataTable
       AttributeDefinitions:
-        - AttributeName: type
+        - AttributeName: uuid
           AttributeType: S
         - AttributeName: date
           AttributeType: N
       KeySchema:
-        - AttributeName: type
+        - AttributeName: uuid
           KeyType: HASH
         - AttributeName: date
           KeyType: RANGE
