@@ -13,7 +13,6 @@
 - [x] Add basic cli interface
 - [x] Basic commands and entry_types loading
 - [x] Refactor
-- [ ] 'show' command
-- [ ] 'update' command
+- [x] 'find' command
 - [ ] 'delete' command
 - [ ] Routines
