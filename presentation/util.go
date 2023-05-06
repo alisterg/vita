@@ -42,6 +42,36 @@ func RunAddEntryPrompts(prompts []interface{}) map[string]string {
 	return itemData
 }
 
+func RunUpdateEntryPrompts(existingData map[string]string, prompts []interface{}) map[string]string {
+	itemData := make(map[string]string)
+
+	for _, rawPrompt := range prompts {
+		reader := bufio.NewReader(os.Stdin)
+
+		prompt := fmt.Sprintf("%s", rawPrompt)
+		PrintCyan(fmt.Sprintf("%s> ", prompt))
+
+		existingValue, exists := existingData[prompt]
+		if exists {
+			fmt.Printf("(%s)", existingValue)
+		}
+
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+
+		input = strings.TrimSuffix(input, "\n")
+		if len(input) > 0 {
+			itemData[prompt] = input
+		} else {
+			itemData[prompt] = existingValue
+		}
+	}
+
+	return itemData
+}
+
 func PrintEntry(entry *core.Entry) {
 	// TODO: instead, sort as defined in entry_types.json
 	sorted := core.MapSorter(entry.Data)

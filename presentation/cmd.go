@@ -17,10 +17,12 @@ var RootCmd = &cobra.Command{Use: "vita"}
 func init() {
 	RootCmd.AddCommand(CmdAdd)
 	RootCmd.AddCommand(CmdFind)
+	RootCmd.AddCommand(CmdUpdate)
 	RootCmd.AddCommand(CmdRoutine)
 
 	CmdFind.Flags().Int("num", 0, "number of entries to return")
 	CmdFind.Flags().String("search", "", "search string")
+	CmdUpdate.Flags().String("search", "", "search string")
 }
 
 // USAGE
@@ -117,6 +119,59 @@ var CmdFind = &cobra.Command{
 
 		for _, entry := range entries {
 			PrintEntry(entry)
+		}
+	},
+}
+
+// USAGE
+// v update movie --search "something" # updates all movies with "something" in any field
+// (you need to be explicit)
+var CmdUpdate = &cobra.Command{
+	Use:   "update",
+	Short: "Update a record based on the result of Find",
+	Long:  "Update a record based on the result of Find",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		entryType := args[0]
+
+		search, _ := cmd.Flags().GetString("search")
+		if len(strings.TrimSpace(search)) == 0 {
+			fmt.Println("You need to provide a search string")
+			return
+		}
+
+		prompts, err := app.LoadPrompts(entryType)
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
+		client, err := app.GetDbClient()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
+		entries, err := app.GetAllEntriesForType(client, entryType)
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
+		filtered := core.SearchEntries(entries, search)
+
+		if len(filtered) == 0 {
+			fmt.Println("No entries found")
+			return
+		}
+
+		for _, entry := range filtered {
+			newEntryData := RunUpdateEntryPrompts(entry.Data, prompts)
+			entry.Data = newEntryData
+			err := app.UpdateEntry(client, entry)
+			if err != nil {
+				fmt.Printf("Error: %v\n", err)
+			}
 		}
 	},
 }

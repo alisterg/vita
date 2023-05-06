@@ -15,9 +15,12 @@
 - [x] Refactor
 - [x] 'find' command
 - [x] Routines
+- [x] 'update' action
 - [ ] usage in readme
+- [ ] add vita to PATH
 
 # Wishlist
 
 - update and delete commands
 - sqlite support
+- 'skip' functionality in routines

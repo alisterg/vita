@@ -37,5 +37,7 @@ node_modules/
 # Go workspace file
 go.work
 
+vita
+
 entry_types.json
 routines.json

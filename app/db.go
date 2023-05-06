@@ -54,6 +54,39 @@ func InsertEntry(client *dynamodb.Client, entry core.Entry) error {
 	return nil
 }
 
+func UpdateEntry(client *dynamodb.Client, entry *core.Entry) error {
+	entryDataJson, err := json.Marshal(entry.Data)
+	if err != nil {
+		fmt.Printf("Couldn't serialize item data: %v:\n %v", err, entry.Data)
+		return err
+	}
+
+	updateObj := map[string]types.AttributeValue{
+		":data": &types.AttributeValueMemberS{Value: string(entryDataJson)},
+	}
+
+	updateExpression := "SET #data = :data"
+
+	input := &dynamodb.UpdateItemInput{
+		TableName: aws.String(tableName),
+		Key: map[string]types.AttributeValue{
+			"uuid": &types.AttributeValueMemberS{Value: entry.Uuid},
+			"date": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", entry.CreatedAt)},
+		},
+		UpdateExpression:          aws.String(updateExpression),
+		ExpressionAttributeNames:  map[string]string{"#data": "data"},
+		ExpressionAttributeValues: updateObj,
+	}
+
+	_, err2 := client.UpdateItem(context.TODO(), input)
+	if err2 != nil {
+		return err2
+	}
+
+	fmt.Println("Item updated")
+	return nil
+}
+
 func BulkInsertEntries(client *dynamodb.Client, entries []core.Entry) error {
 	writeRequests := make([]types.WriteRequest, len(entries))
 	for i, entry := range entries {
