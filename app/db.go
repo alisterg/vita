@@ -54,6 +54,44 @@ func InsertEntry(client *dynamodb.Client, entry core.Entry) error {
 	return nil
 }
 
+func BulkInsertEntries(client *dynamodb.Client, entries []core.Entry) error {
+	writeRequests := make([]types.WriteRequest, len(entries))
+	for i, entry := range entries {
+		entryDataJson, err := json.Marshal(entry.Data)
+		if err != nil {
+			fmt.Printf("Couldn't serialize item data: %v:\n %v", err, entry.Data)
+			return err
+		}
+
+		insertObj := map[string]types.AttributeValue{
+			"uuid": &types.AttributeValueMemberS{Value: entry.Uuid},
+			"type": &types.AttributeValueMemberS{Value: entry.EntryType},
+			"date": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", entry.CreatedAt)},
+			"data": &types.AttributeValueMemberS{Value: string(entryDataJson)},
+		}
+
+		writeRequests[i] = types.WriteRequest{
+			PutRequest: &types.PutRequest{
+				Item: insertObj,
+			},
+		}
+	}
+
+	batchWriteInput := &dynamodb.BatchWriteItemInput{
+		RequestItems: map[string][]types.WriteRequest{
+			tableName: writeRequests,
+		},
+	}
+
+	_, err := client.BatchWriteItem(context.TODO(), batchWriteInput)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Items added")
+	return nil
+}
+
 func Query(client *dynamodb.Client, partitionKey string, partitionValue string) (*dynamodb.QueryOutput, error) {
 	input := &dynamodb.QueryInput{
 		TableName:              aws.String(tableName),

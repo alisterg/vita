@@ -17,6 +17,7 @@ var RootCmd = &cobra.Command{Use: "vita"}
 func init() {
 	RootCmd.AddCommand(CmdAdd)
 	RootCmd.AddCommand(CmdFind)
+	RootCmd.AddCommand(CmdRoutine)
 
 	CmdFind.Flags().Int("num", 0, "number of entries to return")
 	CmdFind.Flags().String("search", "", "search string")
@@ -110,5 +111,51 @@ var CmdFind = &cobra.Command{
 		for _, entry := range entries {
 			PrintEntry(entry)
 		}
+	},
+}
+
+// USAGE
+// v routine weekly # runs the 'weekly' routine defined in routines.json
+var CmdRoutine = &cobra.Command{
+	Use:   "routine",
+	Short: "Run a routine of entries",
+	Long:  `Run a routine of entries`,
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		routine := args[0]
+
+		client, err := app.GetDbClient()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
+		prompts, err := app.LoadPromptsForRoutine(routine)
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
+		entries := make([]core.Entry, 0)
+
+		for _, entryType := range prompts {
+			rawEntryType := fmt.Sprintf("%s", entryType)
+			prompts, err := app.LoadPrompts(rawEntryType)
+			if err != nil {
+				fmt.Printf("Error: %v\n", err)
+				return
+			}
+
+			entry := core.Entry{
+				Uuid:      uuid.New().String(),
+				EntryType: rawEntryType,
+				Data:      RunAddEntryPrompts(prompts),
+				CreatedAt: time.Now().Unix(),
+			}
+			entries = append(entries, entry)
+		}
+
+		app.BulkInsertEntries(client, entries)
+		PrintMagenta("Don't forget to add any ad-hoc items!\n")
 	},
 }

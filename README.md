@@ -16,7 +16,7 @@ todo
 
 ## entry_types.json
 
-The file `cli/entry_types.json` contains your personal data types that the CLI application
+The file `entry_types.json` contains your personal data types that the CLI application
 will recognise.
 
 Example:
@@ -28,12 +28,25 @@ Example:
 This will allow you to enter a `location` entry into the application; it will prompt you for
 the 'City name'.
 
+## routines.json
+
+The file `routines.json` contains routines that you can define to run sets of 'entries'.
+
+Example:
+
+```json
+{ "weekly": ["location"] }
+```
+
+This looks for any key in `entry_types.json` that matches values in the array; in this example,
+it will add a 'location' entry.
+
 ## Infrastructure
 
-In the `infra` directory:
+Ensure you have an AWS account and credentials to access it via the CLI.
 
-1. `sam package`
-2. `sam deploy --stack-name MyStackName --capabilities CAPABILITY_IAM`
+1. `sam package -t infra.yml`
+2. `sam deploy -t infra.yml --stack-name MyStackName --capabilities CAPABILITY_IAM`
 
 This will create the CloudFormation stack containing a DynamoDB table and IAM role to access it.
 

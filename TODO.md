@@ -14,5 +14,9 @@
 - [x] Basic commands and entry_types loading
 - [x] Refactor
 - [x] 'find' command
-- [ ] 'delete' command
-- [ ] Routines
+- [x] Routines
+
+# Wishlist
+
+- update and delete commands
+- sqlite support
