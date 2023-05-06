@@ -60,9 +60,9 @@ var CmdAdd = &cobra.Command{
 }
 
 // USAGE
-// v show movie # lists all movies
-// v show movie --n 10 # lists latest 10 movies
-// v show movie --search "something" # finds movies with "something" in any field
+// v find movie # lists all movies
+// v find movie --n 10 # lists latest 10 movies
+// v find movie --search "something" # finds movies with "something" in any field
 var CmdFind = &cobra.Command{
 	Use:   "find",
 	Short: "Find items",
@@ -83,7 +83,9 @@ var CmdFind = &cobra.Command{
 			return
 		}
 
-		fmt.Printf("Total entries: %d entries\n", len(entries))
+		fmt.Print("Total entries: ")
+		PrintCyan(fmt.Sprintf("%d", len(entries)))
+		fmt.Println()
 
 		num, _ := cmd.Flags().GetInt("num")
 		search, _ := cmd.Flags().GetString("search")
@@ -104,8 +106,13 @@ var CmdFind = &cobra.Command{
 		}
 
 		if num > 0 {
-			fmt.Printf("Getting %d entries\n", num)
-			entries = entries[:num]
+			fmt.Print("Getting entries: ")
+			PrintCyan(fmt.Sprintf("%d", num))
+			fmt.Println()
+
+			if len(entries) > num {
+				entries = entries[:num]
+			}
 		}
 
 		for _, entry := range entries {

@@ -15,6 +15,7 @@
 - [x] Refactor
 - [x] 'find' command
 - [x] Routines
+- [ ] usage in readme
 
 # Wishlist
 
