@@ -1,11 +1,13 @@
-package presentation
+package cli
 
 import (
 	"bufio"
 	"fmt"
 	"os"
 	"strings"
+
 	"vita/core"
+	"vita/core/entities"
 
 	"github.com/fatih/color"
 )
@@ -20,13 +22,12 @@ func PrintMagenta(text string) {
 	fmt.Printf("%s", colorFn(text))
 }
 
-func RunAddEntryPrompts(prompts []interface{}) map[string]string {
+func RunAddEntryPrompts(prompts []string) map[string]string {
 	itemData := make(map[string]string)
 
-	for _, rawPrompt := range prompts {
+	for _, prompt := range prompts {
 		reader := bufio.NewReader(os.Stdin)
 
-		prompt := fmt.Sprintf("%s", rawPrompt)
 		PrintCyan(fmt.Sprintf("%s> ", prompt))
 
 		input, err := reader.ReadString('\n')
@@ -42,13 +43,12 @@ func RunAddEntryPrompts(prompts []interface{}) map[string]string {
 	return itemData
 }
 
-func RunUpdateEntryPrompts(existingData map[string]string, prompts []interface{}) map[string]string {
+func RunUpdateEntryPrompts(existingData map[string]string, prompts []string) map[string]string {
 	itemData := make(map[string]string)
 
-	for _, rawPrompt := range prompts {
+	for _, prompt := range prompts {
 		reader := bufio.NewReader(os.Stdin)
 
-		prompt := fmt.Sprintf("%s", rawPrompt)
 		PrintCyan(fmt.Sprintf("%s> ", prompt))
 
 		existingValue, exists := existingData[prompt]
@@ -72,7 +72,7 @@ func RunUpdateEntryPrompts(existingData map[string]string, prompts []interface{}
 	return itemData
 }
 
-func PrintEntry(entry *core.Entry) {
+func PrintEntry(entry entities.Entry) {
 	// TODO: instead, sort as defined in entry_types.json
 	sorted := core.MapSorter(entry.Data)
 

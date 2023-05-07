@@ -1,20 +1,33 @@
-package presentation
+package cli
 
 import (
 	"fmt"
 	"strings"
 	"time"
 
+	"vita/adapters/datasources/dynamo"
+	"vita/adapters/datasources/jsonfile"
+	"vita/core"
+	"vita/core/entities"
+	"vita/core/ports"
+
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
-
-	"vita/app"
-	"vita/core"
 )
+
+var entryTypeRepo ports.EntryTypeRepository
+var entryRepo ports.EntryRepository
+var routineRepo ports.RoutineRepository
 
 var RootCmd = &cobra.Command{Use: "vita"}
 
 func init() {
+
+	// CHANGE THESE IF YOU WISH TO CHANGE THE DATA SOURCE
+	entryTypeRepo = jsonfile.EntryTypes{}
+	routineRepo = jsonfile.Routines{}
+	entryRepo = dynamo.Entries{}
+
 	RootCmd.AddCommand(CmdAdd)
 	RootCmd.AddCommand(CmdFind)
 	RootCmd.AddCommand(CmdUpdate)
@@ -33,30 +46,25 @@ var CmdAdd = &cobra.Command{
 	Long:  `Add a new itemm`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		entryType := args[0]
+		entryTypeKey := args[0]
 
-		prompts, err := app.LoadPrompts(entryType)
+		entryType, err := entryTypeRepo.GetEntryType(entryTypeKey)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 
-		insertVal := core.Entry{
+		insertVal := entities.Entry{
 			Uuid:      uuid.New().String(),
-			EntryType: entryType,
-			Data:      RunAddEntryPrompts(prompts),
+			EntryType: entryTypeKey,
+			Data:      RunAddEntryPrompts(entryType.Prompts),
 			CreatedAt: time.Now().Unix(),
 		}
 
-		client, err := app.GetDbClient()
-		if err != nil {
+		err2 := entryRepo.CreateEntry(insertVal)
+		if err2 != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
-		}
-
-		err2 := app.InsertEntry(client, insertVal)
-		if err2 != nil {
-			fmt.Printf("Error: %v\n", err2)
 		}
 	},
 }
@@ -71,15 +79,12 @@ var CmdFind = &cobra.Command{
 	Long:  `Find items`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		entryType := args[0]
+		entryTypeKey := args[0]
 
-		client, err := app.GetDbClient()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			return
-		}
+		num, _ := cmd.Flags().GetInt("num")
+		search, _ := cmd.Flags().GetString("search")
 
-		entries, err := app.GetAllEntriesForType(client, entryType)
+		entries, err := entryRepo.GetAllEntriesForType(entryTypeKey)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
@@ -88,9 +93,6 @@ var CmdFind = &cobra.Command{
 		fmt.Print("Total entries: ")
 		PrintCyan(fmt.Sprintf("%d", len(entries)))
 		fmt.Println()
-
-		num, _ := cmd.Flags().GetInt("num")
-		search, _ := cmd.Flags().GetString("search")
 
 		if len(strings.TrimSpace(search)) > 0 {
 			filtered := core.SearchEntries(entries, search)
@@ -120,6 +122,7 @@ var CmdFind = &cobra.Command{
 		for _, entry := range entries {
 			PrintEntry(entry)
 		}
+
 	},
 }
 
@@ -132,7 +135,7 @@ var CmdUpdate = &cobra.Command{
 	Long:  "Update a record based on the result of Find",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		entryType := args[0]
+		entryTypeKey := args[0]
 
 		search, _ := cmd.Flags().GetString("search")
 		if len(strings.TrimSpace(search)) == 0 {
@@ -140,19 +143,13 @@ var CmdUpdate = &cobra.Command{
 			return
 		}
 
-		prompts, err := app.LoadPrompts(entryType)
+		entryType, err := entryTypeRepo.GetEntryType(entryTypeKey)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 
-		client, err := app.GetDbClient()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			return
-		}
-
-		entries, err := app.GetAllEntriesForType(client, entryType)
+		entries, err := entryRepo.GetAllEntriesForType(entryTypeKey)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
@@ -166,9 +163,9 @@ var CmdUpdate = &cobra.Command{
 		}
 
 		for _, entry := range filtered {
-			newEntryData := RunUpdateEntryPrompts(entry.Data, prompts)
+			newEntryData := RunUpdateEntryPrompts(entry.Data, entryType.Prompts)
 			entry.Data = newEntryData
-			err := app.UpdateEntry(client, entry)
+			err := entryRepo.UpdateEntry(entry)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
 			}
@@ -184,40 +181,33 @@ var CmdRoutine = &cobra.Command{
 	Long:  `Run a routine of entries`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		routine := args[0]
+		routineKey := args[0]
 
-		client, err := app.GetDbClient()
+		routine, err := routineRepo.GetRoutine(routineKey)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 
-		prompts, err := app.LoadPromptsForRoutine(routine)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			return
-		}
+		entries := make([]entities.Entry, 0)
 
-		entries := make([]core.Entry, 0)
-
-		for _, entryType := range prompts {
-			rawEntryType := fmt.Sprintf("%s", entryType)
-			prompts, err := app.LoadPrompts(rawEntryType)
+		for _, entryTypeKey := range routine.EntryTypes {
+			entryType, err := entryTypeRepo.GetEntryType(entryTypeKey)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
 				return
 			}
 
-			entry := core.Entry{
+			entry := entities.Entry{
 				Uuid:      uuid.New().String(),
-				EntryType: rawEntryType,
-				Data:      RunAddEntryPrompts(prompts),
+				EntryType: entryTypeKey,
+				Data:      RunAddEntryPrompts(entryType.Prompts),
 				CreatedAt: time.Now().Unix(),
 			}
 			entries = append(entries, entry)
 		}
 
-		app.BulkInsertEntries(client, entries)
+		entryRepo.BulkCreateEntries(entries)
 		PrintMagenta("Don't forget to add any ad-hoc items!\n")
 	},
 }

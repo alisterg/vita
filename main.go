@@ -1,9 +1,9 @@
 package main
 
 import (
-	"vita/presentation"
+	"vita/adapters/transport/cli"
 )
 
 func main() {
-	presentation.RootCmd.Execute()
+	cli.RootCmd.Execute()
 }

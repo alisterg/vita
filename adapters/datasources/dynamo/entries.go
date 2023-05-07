@@ -1,4 +1,4 @@
-package app
+package dynamo
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"vita/core"
+	"vita/core/entities"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -15,9 +15,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
+type Entries struct{}
+
 var tableName = "LifeDataTable"
 
-func GetDbClient() (*dynamodb.Client, error) {
+func (d Entries) getDbClient() (*dynamodb.Client, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return nil, err
@@ -26,10 +28,14 @@ func GetDbClient() (*dynamodb.Client, error) {
 	return dynamodb.NewFromConfig(cfg), nil
 }
 
-func InsertEntry(client *dynamodb.Client, entry core.Entry) error {
+func (d Entries) CreateEntry(entry entities.Entry) error {
+	client, err := d.getDbClient()
+	if err != nil {
+		return err
+	}
+
 	entryDataJson, err := json.Marshal(entry.Data)
 	if err != nil {
-		fmt.Printf("Couldn't serialise item data: %v:\n %v", err, entry.Data)
 		return err
 	}
 
@@ -50,14 +56,17 @@ func InsertEntry(client *dynamodb.Client, entry core.Entry) error {
 		return err2
 	}
 
-	fmt.Println("Item added")
 	return nil
 }
 
-func UpdateEntry(client *dynamodb.Client, entry *core.Entry) error {
+func (d Entries) UpdateEntry(entry entities.Entry) error {
+	client, err := d.getDbClient()
+	if err != nil {
+		return err
+	}
+
 	entryDataJson, err := json.Marshal(entry.Data)
 	if err != nil {
-		fmt.Printf("Couldn't serialize item data: %v:\n %v", err, entry.Data)
 		return err
 	}
 
@@ -83,16 +92,19 @@ func UpdateEntry(client *dynamodb.Client, entry *core.Entry) error {
 		return err2
 	}
 
-	fmt.Println("Item updated")
 	return nil
 }
 
-func BulkInsertEntries(client *dynamodb.Client, entries []core.Entry) error {
+func (d Entries) BulkCreateEntries(entries []entities.Entry) error {
+	client, err := d.getDbClient()
+	if err != nil {
+		return err
+	}
+
 	writeRequests := make([]types.WriteRequest, len(entries))
 	for i, entry := range entries {
 		entryDataJson, err := json.Marshal(entry.Data)
 		if err != nil {
-			fmt.Printf("Couldn't serialize item data: %v:\n %v", err, entry.Data)
 			return err
 		}
 
@@ -116,37 +128,21 @@ func BulkInsertEntries(client *dynamodb.Client, entries []core.Entry) error {
 		},
 	}
 
-	_, err := client.BatchWriteItem(context.TODO(), batchWriteInput)
-	if err != nil {
-		return err
+	_, err2 := client.BatchWriteItem(context.TODO(), batchWriteInput)
+	if err2 != nil {
+		return err2
 	}
 
-	fmt.Println("Items added")
 	return nil
 }
 
-func Query(client *dynamodb.Client, partitionKey string, partitionValue string) (*dynamodb.QueryOutput, error) {
-	input := &dynamodb.QueryInput{
-		TableName:              aws.String(tableName),
-		KeyConditionExpression: aws.String("#pk = :pkval"),
-		ExpressionAttributeNames: map[string]string{
-			"#pk": partitionKey,
-		},
-		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":pkval": &types.AttributeValueMemberS{Value: partitionValue},
-		},
-	}
-
-	result, err := client.Query(context.TODO(), input)
+func (d Entries) GetAllEntriesForType(entryType string) ([]entities.Entry, error) {
+	client, err := d.getDbClient()
 	if err != nil {
 		return nil, err
 	}
 
-	return result, nil
-}
-
-func GetAllEntriesForType(client *dynamodb.Client, entryType string) ([]*core.Entry, error) {
-	var entries []*core.Entry
+	var entries []entities.Entry
 
 	input := &dynamodb.ScanInput{
 		TableName:        aws.String(tableName),
@@ -164,22 +160,22 @@ func GetAllEntriesForType(client *dynamodb.Client, entryType string) ([]*core.En
 	for pages.HasMorePages() {
 		output, err := pages.NextPage(context.TODO())
 		if err != nil {
-			return nil, fmt.Errorf("failed to get page: %v", err)
+			return nil, err
 		}
 
 		for _, item := range output.Items {
-			entry, err := entryFromDynamoRecord(item)
+			entry, err := d.entryFromDynamoRecord(item)
 			if err != nil {
 				return nil, err
 			}
-			entries = append(entries, entry)
+			entries = append(entries, *entry)
 		}
 	}
 
 	return entries, nil
 }
 
-func entryFromDynamoRecord(item map[string]types.AttributeValue) (*core.Entry, error) {
+func (d Entries) entryFromDynamoRecord(item map[string]types.AttributeValue) (*entities.Entry, error) {
 	uuidAttr, found := item["uuid"]
 	if !found {
 		return nil, errors.New("couldn't find uuid attribute")
@@ -225,7 +221,7 @@ func entryFromDynamoRecord(item map[string]types.AttributeValue) (*core.Entry, e
 		return nil, errors.New("couldn't parse date attribute")
 	}
 
-	entry := core.Entry{
+	entry := entities.Entry{
 		Uuid:      uuid,
 		EntryType: entryType,
 		Data:      dataValJson,

@@ -1,6 +1,11 @@
 package core
 
-import "sort"
+import (
+	"sort"
+	"strings"
+
+	"vita/core/entities"
+)
 
 type KvPair struct {
 	Key   string
@@ -18,4 +23,19 @@ func MapSorter(inputMap map[string]string) []KvPair {
 	})
 
 	return kvPairs
+}
+
+func SearchEntries(entries []entities.Entry, query string) []entities.Entry {
+	var result []entities.Entry
+
+	for _, entry := range entries {
+		for _, data := range entry.Data {
+			if strings.Contains(strings.ToLower(data), strings.ToLower(query)) {
+				result = append(result, entry)
+				break
+			}
+		}
+	}
+
+	return result
 }
