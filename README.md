@@ -1,9 +1,6 @@
 vīta (_latin - life_) - record anything about your life.
 
-<video controls>
-  <source src="vita_demo.mov" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+https://user-images.githubusercontent.com/8358022/236662869-1be3edb6-457e-417a-8ec7-1a279b4559ad.mp4
 
 # Development
 
