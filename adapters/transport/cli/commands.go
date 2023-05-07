@@ -66,6 +66,8 @@ var CmdAdd = &cobra.Command{
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
+
+		fmt.Println("Entry created")
 	},
 }
 
@@ -122,7 +124,6 @@ var CmdFind = &cobra.Command{
 		for _, entry := range entries {
 			PrintEntry(entry)
 		}
-
 	},
 }
 
@@ -170,6 +171,8 @@ var CmdUpdate = &cobra.Command{
 				fmt.Printf("Error: %v\n", err)
 			}
 		}
+
+		fmt.Println("Entry updated")
 	},
 }
 
@@ -208,6 +211,11 @@ var CmdRoutine = &cobra.Command{
 		}
 
 		entryRepo.BulkCreateEntries(entries)
+
+		fmt.Print("Entries created:")
+		PrintCyan(fmt.Sprintf("%d", len(entries)))
+		fmt.Println()
+
 		PrintMagenta("Don't forget to add any ad-hoc items!\n")
 	},
 }
