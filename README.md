@@ -1,10 +1,5 @@
 vīta (_latin - life_) - record anything about your life.
 
-<video controls>
-  <source src="vita_demo.mov" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
 # Development
 
 ## Prerequisites
@@ -26,32 +21,21 @@ This allows us to easily:
 
 `adapters` are plugins that allow us to change the functionality of the app at whim
 
-## entry_types.json
+## Types
 
-The file `entry_types.json` contains your personal data types that the CLI application
-will recognise.
-
-Example:
+`EntryType` is the basic schema for recording entries. Example:
 
 ```json
-{ "location": ["City name"] }
+{ "book": ["Title", "Start date (YYYY-MM-DD)", "End date (YYYY-MM-DD)", "Rating", "Review"] }
 ```
 
-This will allow you to enter a `location` entry into the application; it will prompt you for
-the 'City name'.
-
-## routines.json
-
-The file `routines.json` contains routines that you can define to run sets of 'entries'.
-
-Example:
+`Entry` is a raw data entry. In the 'book' example, Entry.Data will be stored as a map of the EntryType array values to their result from user input. Example:
 
 ```json
-{ "weekly": ["location"] }
+{ "uuid": "blah", "date": 123, "data": {"Title": "slaughterhouse 5"...} }
 ```
 
-This looks for any key in `entry_types.json` that matches values in the array; in this example,
-it will add a 'location' entry.
+`Routine` is a way to run sets of Entry Types without having to manually run each one.
 
 ## infra.yml
 
