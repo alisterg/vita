@@ -1,5 +1,7 @@
 vīta (_latin - life_) - record anything about your life.
 
+https://user-images.githubusercontent.com/8358022/236662869-1be3edb6-457e-417a-8ec7-1a279b4559ad.mp4
+
 # Development
 
 ## Prerequisites
