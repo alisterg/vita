@@ -30,7 +30,8 @@ Using a ports/adapters pattern due to the nature of the app.
 
 This allows us to easily:
 
-- Change the data sources
+- Change / add the data sources
+- Test Core because it is completely decoupled
 - Add new transport mechanisms (CLI / HTTP etc)
 
 `ports` are interfaces used by the core domain logic

@@ -16,11 +16,12 @@
 - [x] 'find' command
 - [x] Routines
 - [x] 'update' action
-- [ ] usage in readme
-- [ ] add vita to PATH
+- [x] Refactor
+- [x] Update docs
+- [ ] Add sqlite adapters
+- [ ] 'delete' command
 
 # Wishlist
 
-- update and delete commands
-- sqlite support
+- delete command
 - 'skip' functionality in routines
