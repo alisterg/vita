@@ -14,7 +14,7 @@ all: build
 
 build:
 	$(GOBUILD) -tags cli -o $(BINARY_NAME) -v
-	$(GOBUILD) -tags api -o $(BINARY_NAME)_api -v
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_NAME)_api -tags api
 
 clean:
 	$(GOTIDY)
