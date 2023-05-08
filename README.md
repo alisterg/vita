@@ -63,14 +63,15 @@ This allows us to easily:
 
 ## infra.yml
 
-This is an AWS SAM template. It creates a CloudFormation stack containing a DynamoDB table and IAM role to access it.
+This is an AWS SAM template. It creates a CloudFormation stack containing all the infrastructure
+necessary.
 
 Ensure you have an AWS account and credentials to access it via the CLI.
 
 1. `sam package -t infra.yml`
 2. `sam deploy -t infra.yml --stack-name MyStackName --capabilities CAPABILITY_IAM`
 
-`sam deploy --guided` if the above does not work
+`sam deploy -t infra.yml --guided` if the above does not work
 
 ## App details
 

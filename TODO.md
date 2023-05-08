@@ -2,6 +2,7 @@
 
 - [x] Cloud infrastructure
 - [x] CLI app
+- [ ] API
 - [ ] Mobile app
 
 # Todo
