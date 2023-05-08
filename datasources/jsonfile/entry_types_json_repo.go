@@ -9,9 +9,9 @@ import (
 	"vita/core/entities"
 )
 
-type EntryTypes struct{}
+type EntryTypesJsonRepo struct{}
 
-func (s EntryTypes) loadEntryTypes() (interface{}, error) {
+func (s EntryTypesJsonRepo) loadEntryTypes() (interface{}, error) {
 	file, err := os.Open("entry_types.json")
 	if err != nil {
 		return nil, errors.New("couldn't load entry_types.json")
@@ -32,7 +32,7 @@ func (s EntryTypes) loadEntryTypes() (interface{}, error) {
 	return result, nil
 }
 
-func (s EntryTypes) GetEntryType(entryType string) (entities.EntryType, error) {
+func (s EntryTypesJsonRepo) GetEntryType(entryType string) (entities.EntryType, error) {
 	result := entities.EntryType{
 		Key: entryType,
 	}
@@ -66,18 +66,18 @@ func (s EntryTypes) GetEntryType(entryType string) (entities.EntryType, error) {
 	return result, nil
 }
 
-func (s EntryTypes) GetAllEntryTypes() ([]entities.EntryType, error) {
+func (s EntryTypesJsonRepo) GetAllEntryTypes() ([]entities.EntryType, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (s EntryTypes) CreateEntryType(key string) error {
+func (s EntryTypesJsonRepo) CreateEntryType(key string) error {
 	return errors.New("not implemented")
 }
 
-func (s EntryTypes) UpdateEntryType(entryType entities.EntryType) error {
+func (s EntryTypesJsonRepo) UpdateEntryType(entryType entities.EntryType) error {
 	return errors.New("not implemented")
 }
 
-func (s EntryTypes) DeleteEntryType(key string) error {
+func (s EntryTypesJsonRepo) DeleteEntryType(key string) error {
 	return errors.New("not implemented")
 }

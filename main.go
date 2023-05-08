@@ -1,7 +1,7 @@
 package main
 
 import (
-	"vita/adapters/transport/cli"
+	"vita/transport/cli"
 )
 
 func main() {

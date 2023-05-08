@@ -1,4 +1,4 @@
-package ports
+package repositories
 
 import "vita/core/entities"
 

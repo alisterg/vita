@@ -15,11 +15,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-type Entries struct{}
+type EntriesDynamoRepo struct{}
 
 var tableName = "LifeDataTable"
 
-func (d Entries) getDbClient() (*dynamodb.Client, error) {
+func (d EntriesDynamoRepo) getDbClient() (*dynamodb.Client, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (d Entries) getDbClient() (*dynamodb.Client, error) {
 	return dynamodb.NewFromConfig(cfg), nil
 }
 
-func (d Entries) CreateEntry(entry entities.Entry) error {
+func (d EntriesDynamoRepo) CreateEntry(entry entities.Entry) error {
 	client, err := d.getDbClient()
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func (d Entries) CreateEntry(entry entities.Entry) error {
 	return nil
 }
 
-func (d Entries) UpdateEntry(entry entities.Entry) error {
+func (d EntriesDynamoRepo) UpdateEntry(entry entities.Entry) error {
 	client, err := d.getDbClient()
 	if err != nil {
 		return err
@@ -95,7 +95,7 @@ func (d Entries) UpdateEntry(entry entities.Entry) error {
 	return nil
 }
 
-func (d Entries) BulkCreateEntries(entries []entities.Entry) error {
+func (d EntriesDynamoRepo) BulkCreateEntries(entries []entities.Entry) error {
 	client, err := d.getDbClient()
 	if err != nil {
 		return err
@@ -136,7 +136,7 @@ func (d Entries) BulkCreateEntries(entries []entities.Entry) error {
 	return nil
 }
 
-func (d Entries) GetAllEntriesForType(entryType string) ([]entities.Entry, error) {
+func (d EntriesDynamoRepo) GetAllEntriesForType(entryType string) ([]entities.Entry, error) {
 	client, err := d.getDbClient()
 	if err != nil {
 		return nil, err
@@ -175,7 +175,7 @@ func (d Entries) GetAllEntriesForType(entryType string) ([]entities.Entry, error
 	return entries, nil
 }
 
-func (d Entries) entryFromDynamoRecord(item map[string]types.AttributeValue) (*entities.Entry, error) {
+func (d EntriesDynamoRepo) entryFromDynamoRecord(item map[string]types.AttributeValue) (*entities.Entry, error) {
 	uuidAttr, found := item["uuid"]
 	if !found {
 		return nil, errors.New("couldn't find uuid attribute")

@@ -5,28 +5,28 @@ import (
 	"strings"
 	"time"
 
-	"vita/adapters/datasources/dynamo"
-	"vita/adapters/datasources/jsonfile"
 	"vita/core"
 	"vita/core/entities"
-	"vita/core/ports"
+	"vita/core/repositories"
+	"vita/datasources/dynamo"
+	"vita/datasources/jsonfile"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 )
 
-var entryTypeRepo ports.EntryTypeRepository
-var entryRepo ports.EntryRepository
-var routineRepo ports.RoutineRepository
+var entryTypeRepo repositories.EntryTypeRepository
+var entryRepo repositories.EntryRepository
+var routineRepo repositories.RoutineRepository
 
 var RootCmd = &cobra.Command{Use: "vita"}
 
 func init() {
 
 	// CHANGE THESE IF YOU WISH TO CHANGE THE DATA SOURCE
-	entryTypeRepo = jsonfile.EntryTypes{}
-	routineRepo = jsonfile.Routines{}
-	entryRepo = dynamo.Entries{}
+	entryTypeRepo = jsonfile.EntryTypesJsonRepo{}
+	routineRepo = jsonfile.RoutinesJsonRepo{}
+	entryRepo = dynamo.EntriesDynamoRepo{}
 
 	RootCmd.AddCommand(CmdAdd)
 	RootCmd.AddCommand(CmdFind)
@@ -73,7 +73,7 @@ var CmdAdd = &cobra.Command{
 
 // USAGE
 // v find movie # lists all movies
-// v find movie --n 10 # lists latest 10 movies
+// v find movie --num 10 # lists latest 10 movies
 // v find movie --search "something" # finds movies with "something" in any field
 var CmdFind = &cobra.Command{
 	Use:   "find",

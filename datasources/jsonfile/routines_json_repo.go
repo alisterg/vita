@@ -8,9 +8,9 @@ import (
 	"vita/core/entities"
 )
 
-type Routines struct{}
+type RoutinesJsonRepo struct{}
 
-func (r Routines) loadRoutines() (interface{}, error) {
+func (r RoutinesJsonRepo) loadRoutines() (interface{}, error) {
 	file, err := os.Open("routines.json")
 	if err != nil {
 		return nil, errors.New("couldn't load routines.json")
@@ -31,7 +31,7 @@ func (r Routines) loadRoutines() (interface{}, error) {
 	return result, nil
 }
 
-func (r Routines) GetRoutine(routine string) (entities.Routine, error) {
+func (r RoutinesJsonRepo) GetRoutine(routine string) (entities.Routine, error) {
 	result := entities.Routine{
 		Key: routine,
 	}
@@ -65,19 +65,19 @@ func (r Routines) GetRoutine(routine string) (entities.Routine, error) {
 	return result, nil
 }
 
-func (r Routines) GetAllRoutines() ([]entities.Routine, error) {
+func (r RoutinesJsonRepo) GetAllRoutines() ([]entities.Routine, error) {
 	return nil, errors.New("not implemented")
 
 }
 
-func (r Routines) CreateRoutine(key string) error {
+func (r RoutinesJsonRepo) CreateRoutine(key string) error {
 	return errors.New("not implemented")
 }
 
-func (r Routines) UpdateRoutine(key string, entryTypes []string) error {
+func (r RoutinesJsonRepo) UpdateRoutine(key string, entryTypes []string) error {
 	return errors.New("not implemented")
 }
 
-func (r Routines) DeleteRoutine(key string) error {
+func (r RoutinesJsonRepo) DeleteRoutine(key string) error {
 	return errors.New("not implemented")
 }
