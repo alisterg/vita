@@ -37,7 +37,11 @@ node_modules/
 # Go workspace file
 go.work
 
+.aws-sam
+samconfig.toml
+
 vita
+vita_api
 
 entry_types.json
 routines.json

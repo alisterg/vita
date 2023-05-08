@@ -24,6 +24,13 @@ vita routine weekly # runs the 'weekly' routine (as defined as a Routine)
 - Sam CLI `brew install aws-sam-cli`
 - AWS CLI credentials setup
 
+## Dev commands
+
+- `make build` to build all targets
+- `make run` to run the cli app without building
+- `make runapi` to run the api locally without building
+- `make test` to run automated tests
+
 ## Architecture
 
 Using a ports/adapters pattern due to the nature of the app.
@@ -62,6 +69,8 @@ Ensure you have an AWS account and credentials to access it via the CLI.
 
 1. `sam package -t infra.yml`
 2. `sam deploy -t infra.yml --stack-name MyStackName --capabilities CAPABILITY_IAM`
+
+`sam deploy --guided` if the above does not work
 
 ## App details
 
