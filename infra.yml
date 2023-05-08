@@ -65,7 +65,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /
+            Path: /{proxy+}
             Method: ANY
 
 Outputs:

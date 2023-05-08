@@ -3,14 +3,11 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"github.com/aws/aws-lambda-go/lambda"
 
 	"vita/transport/api"
 )
 
 func main() {
-	http.HandleFunc("/", api.LambdaHandler)
-
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	lambda.Start(api.LambdaHandler)
 }

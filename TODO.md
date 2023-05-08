@@ -1,7 +1,7 @@
 # Plan
 
 - [x] Cloud infrastructure
-- [ ] CLI app
+- [x] CLI app
 - [ ] Mobile app
 
 # Todo
@@ -18,10 +18,10 @@
 - [x] 'update' action
 - [x] Refactor
 - [x] Update docs
-- [ ] Add sqlite adapters
-- [ ] 'delete' command
+- [ ] Implement API transport
 
 # Wishlist
 
 - delete command
 - 'skip' functionality in routines
+- sqlite adapter

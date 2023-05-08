@@ -28,6 +28,7 @@ require (
 )
 
 require (
+	github.com/aws/aws-lambda-go v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.22
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.19.6
 	github.com/aws/smithy-go v1.13.5 // indirect
