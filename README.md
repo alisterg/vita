@@ -8,7 +8,7 @@ https://user-images.githubusercontent.com/8358022/236662869-1be3edb6-457e-417a-8
 vita add movie # runs prompts to insert new movie (as defined as an EntryType)
 
 vita find movie # lists all movies
-vita find movie --n 10 # lists latest 10 movies
+vita find movie --num 10 # lists latest 10 movies
 vita find movie --search "something" # finds movies with "something" in any field
 
 vita update movie --search "something" # updates all movies with "something" in any field
@@ -34,9 +34,9 @@ This allows us to easily:
 - Test Core because it is completely decoupled
 - Add new transport mechanisms (CLI / HTTP etc)
 
-`ports` are interfaces used by the core domain logic
+`ports` (repositories, usecases) are interfaces used by the core domain logic
 
-`adapters` are plugins that allow us to change the functionality of the app at whim
+`adapters` (datasources, transport) are plugins that allow us to change the functionality of the app at whim
 
 ## Types
 
