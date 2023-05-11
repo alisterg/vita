@@ -9,7 +9,6 @@ import (
 	"vita/core/entities"
 	"vita/core/repositories"
 	"vita/datasources/dynamo"
-	"vita/datasources/jsonfile"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
@@ -24,8 +23,8 @@ var RootCmd = &cobra.Command{Use: "vita"}
 func init() {
 
 	// CHANGE THESE IF YOU WISH TO CHANGE THE DATA SOURCE
-	entryTypeRepo = jsonfile.EntryTypesJsonRepo{}
-	routineRepo = jsonfile.RoutinesJsonRepo{}
+	entryTypeRepo = dynamo.EntryTypesDynamoRepo{}
+	routineRepo = dynamo.RoutinesDynamoRepo{}
 	entryRepo = dynamo.EntriesDynamoRepo{}
 
 	RootCmd.AddCommand(CmdAdd)

@@ -1,6 +1,6 @@
 package entities
 
 type Routine struct {
-	Key        string
-	EntryTypes []string
+	Key        string   // dynamo column: key
+	EntryTypes []string // dynamo column: entry_types
 }

@@ -70,11 +70,11 @@ func (r RoutinesJsonRepo) GetAllRoutines() ([]entities.Routine, error) {
 
 }
 
-func (r RoutinesJsonRepo) CreateRoutine(key string) error {
+func (r RoutinesJsonRepo) CreateRoutine(routine entities.Routine) error {
 	return errors.New("not implemented")
 }
 
-func (r RoutinesJsonRepo) UpdateRoutine(key string, entryTypes []string) error {
+func (r RoutinesJsonRepo) UpdateRoutine(routine entities.Routine) error {
 	return errors.New("not implemented")
 }
 

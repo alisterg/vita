@@ -19,7 +19,10 @@
 - [x] 'update' action
 - [x] Refactor
 - [x] Update docs
+- [x] Add entry_types and routines dynamo adapters
 - [ ] Implement API transport
+  - figure out api (paths, request objs etc)
+  - convert Commands(cli) into use cases
 
 # Wishlist
 

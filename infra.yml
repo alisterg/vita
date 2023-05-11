@@ -20,6 +20,34 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
 
+  LifeEntryTypeTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: LifeEntryTypeTable
+      AttributeDefinitions:
+        - AttributeName: key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: key
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  LifeRoutineTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: LifeRoutineTable
+      AttributeDefinitions:
+        - AttributeName: key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: key
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
   LifedataAccessRole:
     Type: AWS::IAM::Role
     Properties:
@@ -49,6 +77,8 @@ Resources:
                   - dynamodb:DeleteItem
                 Resource:
                   - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/LifeDataTable"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/LifeEntryTypeTable"
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/LifeRoutineTable"
 
   LambdaHandler:
     Type: AWS::Serverless::Function

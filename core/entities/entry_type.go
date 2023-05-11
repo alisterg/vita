@@ -1,6 +1,6 @@
 package entities
 
 type EntryType struct {
-	Key     string
-	Prompts []string
+	Key     string   // dynamo column: key
+	Prompts []string // dynamo column: prompts
 }

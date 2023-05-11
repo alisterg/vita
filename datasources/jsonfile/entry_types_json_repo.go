@@ -70,7 +70,7 @@ func (s EntryTypesJsonRepo) GetAllEntryTypes() ([]entities.EntryType, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (s EntryTypesJsonRepo) CreateEntryType(key string) error {
+func (s EntryTypesJsonRepo) CreateEntryType(entryType entities.EntryType) error {
 	return errors.New("not implemented")
 }
 

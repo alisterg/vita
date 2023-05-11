@@ -10,26 +10,16 @@ import (
 	"vita/core/entities"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 type EntriesDynamoRepo struct{}
 
-var tableName = "LifeDataTable"
-
-func (d EntriesDynamoRepo) getDbClient() (*dynamodb.Client, error) {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
-	if err != nil {
-		return nil, err
-	}
-
-	return dynamodb.NewFromConfig(cfg), nil
-}
+var entryTableName = "LifeDataTable"
 
 func (d EntriesDynamoRepo) CreateEntry(entry entities.Entry) error {
-	client, err := d.getDbClient()
+	client, err := getDbClient()
 	if err != nil {
 		return err
 	}
@@ -47,7 +37,7 @@ func (d EntriesDynamoRepo) CreateEntry(entry entities.Entry) error {
 	}
 
 	input := &dynamodb.PutItemInput{
-		TableName: aws.String(tableName),
+		TableName: aws.String(entryTableName),
 		Item:      insertObj,
 	}
 
@@ -60,7 +50,7 @@ func (d EntriesDynamoRepo) CreateEntry(entry entities.Entry) error {
 }
 
 func (d EntriesDynamoRepo) UpdateEntry(entry entities.Entry) error {
-	client, err := d.getDbClient()
+	client, err := getDbClient()
 	if err != nil {
 		return err
 	}
@@ -77,7 +67,7 @@ func (d EntriesDynamoRepo) UpdateEntry(entry entities.Entry) error {
 	updateExpression := "SET #data = :data"
 
 	input := &dynamodb.UpdateItemInput{
-		TableName: aws.String(tableName),
+		TableName: aws.String(entryTableName),
 		Key: map[string]types.AttributeValue{
 			"uuid": &types.AttributeValueMemberS{Value: entry.Uuid},
 			"date": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", entry.CreatedAt)},
@@ -96,7 +86,7 @@ func (d EntriesDynamoRepo) UpdateEntry(entry entities.Entry) error {
 }
 
 func (d EntriesDynamoRepo) BulkCreateEntries(entries []entities.Entry) error {
-	client, err := d.getDbClient()
+	client, err := getDbClient()
 	if err != nil {
 		return err
 	}
@@ -124,7 +114,7 @@ func (d EntriesDynamoRepo) BulkCreateEntries(entries []entities.Entry) error {
 
 	batchWriteInput := &dynamodb.BatchWriteItemInput{
 		RequestItems: map[string][]types.WriteRequest{
-			tableName: writeRequests,
+			entryTableName: writeRequests,
 		},
 	}
 
@@ -137,7 +127,7 @@ func (d EntriesDynamoRepo) BulkCreateEntries(entries []entities.Entry) error {
 }
 
 func (d EntriesDynamoRepo) GetAllEntriesForType(entryType string) ([]entities.Entry, error) {
-	client, err := d.getDbClient()
+	client, err := getDbClient()
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +135,7 @@ func (d EntriesDynamoRepo) GetAllEntriesForType(entryType string) ([]entities.En
 	var entries []entities.Entry
 
 	input := &dynamodb.ScanInput{
-		TableName:        aws.String(tableName),
+		TableName:        aws.String(entryTableName),
 		FilterExpression: aws.String("#type = :type"),
 		ExpressionAttributeNames: map[string]string{
 			"#type": "type",
