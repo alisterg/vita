@@ -54,7 +54,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: LifeDataLambda
-      Handler: vita_api
+      Handler: vita_lambda_api
       Runtime: go1.x
       CodeUri: .
       Timeout: 30
