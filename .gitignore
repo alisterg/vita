@@ -42,6 +42,7 @@ samconfig.toml
 
 vita
 vita_api
+vita_lambda_api
 
 entry_types.json
 routines.json
