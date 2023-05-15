@@ -80,6 +80,14 @@ Resources:
                   - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/LifeEntryTypeTable"
                   - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/LifeRoutineTable"
 
+  LifeDataApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      ApiKeySourceType: HEADER
+      Auth:
+        ApiKeyRequired: true
+
   LambdaHandler:
     Type: AWS::Serverless::Function
     Properties:
@@ -97,8 +105,11 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+            RestApiId: !Ref LifeDataApiGateway
+            Auth:
+              ApiKeyRequired: true
 
 Outputs:
   ApiEndpoint:
     Description: API Gateway endpoint URL
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${LifeDataApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
