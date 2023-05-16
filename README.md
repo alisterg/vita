@@ -73,6 +73,11 @@ Ensure you have an AWS account and credentials to access it via the CLI.
 
 `sam deploy -t infra.yml --guided` if the above does not work
 
+To setup the API key, you need to login to the AWS console and:
+
+1. Create a Usage Plan. Here you can also set rate limits
+2. Create an API key and add it to the Usage Plan
+
 ## App details
 
 Using Cobra for managing CLI commands and flags:
