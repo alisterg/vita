@@ -126,6 +126,38 @@ func (d EntriesDynamoRepo) BulkCreateEntries(entries []entities.Entry) error {
 	return nil
 }
 
+func (d EntriesDynamoRepo) GetAllEntries() ([]entities.Entry, error) {
+	client, err := getDbClient()
+	if err != nil {
+		return nil, err
+	}
+
+	var entries []entities.Entry
+
+	input := &dynamodb.ScanInput{
+		TableName: aws.String(entryTableName),
+	}
+
+	pages := dynamodb.NewScanPaginator(client, input)
+
+	for pages.HasMorePages() {
+		output, err := pages.NextPage(context.TODO())
+		if err != nil {
+			return nil, err
+		}
+
+		for _, item := range output.Items {
+			entry, err := d.entryFromDynamoRecord(item)
+			if err != nil {
+				return nil, err
+			}
+			entries = append(entries, *entry)
+		}
+	}
+
+	return entries, nil
+}
+
 func (d EntriesDynamoRepo) GetAllEntriesForType(entryType string) ([]entities.Entry, error) {
 	client, err := getDbClient()
 	if err != nil {

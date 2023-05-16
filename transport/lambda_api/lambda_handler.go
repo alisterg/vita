@@ -5,10 +5,23 @@ import (
 	"fmt"
 	"net/http"
 
+	"vita/core/repositories"
+	"vita/core/use_cases"
+	"vita/datasources/dynamo"
+
 	"github.com/aws/aws-lambda-go/events"
 )
 
+var entryTypeRepo repositories.EntryTypeRepository
+var entryRepo repositories.EntryRepository
+var routineRepo repositories.RoutineRepository
+
 func LambdaHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	// CHANGE THESE IF YOU WISH TO CHANGE THE DATA SOURCE
+	entryTypeRepo = dynamo.EntryTypesDynamoRepo{}
+	routineRepo = dynamo.RoutinesDynamoRepo{}
+	entryRepo = dynamo.EntriesDynamoRepo{}
+
 	switch event.HTTPMethod {
 	case http.MethodGet:
 		return handleGetRequest(event)
@@ -24,14 +37,24 @@ func LambdaHandler(ctx context.Context, event events.APIGatewayProxyRequest) (ev
 }
 
 func handleGetRequest(event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// /entry/all
+	var jsonResult string
 
-	// /entry-type/all
+	switch event.Path {
+	case "/entry/all":
+		entries, err := use_cases.GetAllEntriesJson(entryRepo)
+		if err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+		jsonResult = entries
 
-	// /routine/all
+	case "/entry-type/all":
+	case "/routine/all":
+	default:
+		return events.APIGatewayProxyResponse{StatusCode: 404}, fmt.Errorf("not found")
+	}
 
 	response := events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("Request: %v", event),
+		Body:       jsonResult,
 		StatusCode: 200,
 	}
 	return response, nil
