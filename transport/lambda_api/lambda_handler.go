@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"vita/core/repositories"
 	"vita/core/use_cases"
@@ -38,19 +39,24 @@ func LambdaHandler(ctx context.Context, event events.APIGatewayProxyRequest) (ev
 
 func handleGetRequest(event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var jsonResult string
+	var err error
 
 	switch event.Path {
 	case "/entry/all":
-		entries, err := use_cases.GetAllEntriesJson(entryRepo)
-		if err != nil {
-			return events.APIGatewayProxyResponse{}, err
-		}
-		jsonResult = entries
+		jsonResult, err = use_cases.GetAllEntriesJson(entryRepo)
 
 	case "/entry-type/all":
+		jsonResult, err = use_cases.GetAllEntryTypesJson(entryTypeRepo)
+
 	case "/routine/all":
+		jsonResult, err = use_cases.GetAllRoutinesJson(routineRepo)
+
 	default:
 		return events.APIGatewayProxyResponse{StatusCode: 404}, fmt.Errorf("not found")
+	}
+
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
 	}
 
 	response := events.APIGatewayProxyResponse{
@@ -61,52 +67,94 @@ func handleGetRequest(event events.APIGatewayProxyRequest) (events.APIGatewayPro
 }
 
 func handlePostRequest(event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// /entry/bulk
-	// body: []{entryType: string, entryData: map[string]string}
+	var err error
 
-	// /entry
-	// body: {entryType: string, entryData: map[string]string}
+	switch event.Path {
+	// body: []EntryDto
+	case "/entry/bulk":
+		err = use_cases.CreateBulkEntriesFromJson(entryRepo, event.Body)
 
-	// /entry-type
-	// body: {key: string, prompts: []string}
+	// body: EntryDto
+	case "/entry":
+		err = use_cases.CreateEntryFromJson(entryRepo, event.Body)
 
-	// /routine
-	// body: {key: string, entryTypes: []string}
+	// body: EntryType
+	case "/entry-type":
+		err = use_cases.CreateEntryTypeFromJson(entryTypeRepo, event.Body)
+
+	// body: Routine
+	case "/routine":
+		err = use_cases.CreateRoutineFromJson(routineRepo, event.Body)
+
+	default:
+		return events.APIGatewayProxyResponse{StatusCode: 404}, fmt.Errorf("not found")
+	}
+
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
 
 	response := events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("Request: %v", event),
-		StatusCode: 200,
+		StatusCode: 201,
 	}
 	return response, nil
 }
 
 func handlePutRequest(event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// /entry
-	// body: Entry
+	var err error
 
-	// /entry-type
-	// body: EntryType
+	switch event.Path {
+	case "/entry":
+		// body: EntryDto
+		err = use_cases.UpdateEntryFromJson(entryRepo, event.Body)
 
-	// /routine
-	// body: Routine
+	case "/entry-type":
+		// body: EntryType
+		err = use_cases.UpdateEntryTypeFromJson(entryTypeRepo, event.Body)
+
+	case "/routine":
+		// body: Routine
+		err = use_cases.UpdateRoutineFromJson(routineRepo, event.Body)
+
+	default:
+		return events.APIGatewayProxyResponse{StatusCode: 404}, fmt.Errorf("not found")
+	}
+
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
 
 	response := events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("Request: %v", event),
-		StatusCode: 200,
+		StatusCode: 204,
 	}
+
 	return response, nil
 }
 
 func handleDeleteRequest(event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// /entry/{uuid}
 
-	// /entry-type/{key}
+	if strings.HasPrefix(event.Path, "/entry/") { // /entry/{uuid}
+		// uuid := strings.TrimPrefix(event.Path, "/entry/")
+		// TODO: implement delete method. Dynamo requires composite key (including date),
+		// so there isn't an easy way to do it
 
-	// /routine/{key}
+	} else if strings.HasPrefix(event.Path, "/entry-type/") { // /entry-type/{key}
+		// key := strings.TrimPrefix(event.Path, "/entry-type/")
+		// TODO: decide whether this cascade deletes entries
+
+	} else if strings.HasPrefix(event.Path, "/routine/") { // /routine/{key}
+		key := strings.TrimPrefix(event.Path, "/routine/")
+		err := use_cases.DeleteRoutine(routineRepo, key)
+		if err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+
+	} else {
+		return events.APIGatewayProxyResponse{StatusCode: 404}, fmt.Errorf("not found")
+	}
 
 	response := events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("Request: %v", event),
-		StatusCode: 200,
+		StatusCode: 204,
 	}
 	return response, nil
 }
