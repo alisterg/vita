@@ -28,8 +28,8 @@ func (d RoutinesDynamoRepo) CreateRoutine(routine entities.Routine) error {
 	}
 
 	insertObj := map[string]types.AttributeValue{
-		"key":        &types.AttributeValueMemberS{Value: routine.Key},
-		"entrytypes": &types.AttributeValueMemberS{Value: string(entryTypesJson)},
+		"key":         &types.AttributeValueMemberS{Value: routine.Key},
+		"entry_types": &types.AttributeValueMemberS{Value: string(entryTypesJson)},
 	}
 
 	input := &dynamodb.PutItemInput{
