@@ -2,7 +2,7 @@
 
 - [x] Cloud infrastructure
 - [x] CLI app
-- [ ] API
+- [x] API
 - [ ] Mobile app
 
 # Todo
@@ -20,9 +20,9 @@
 - [x] Refactor
 - [x] Update docs
 - [x] Add entry_types and routines dynamo adapters
-- [ ] Implement API transport
-  - figure out api (paths, request objs etc)
-  - convert Commands(cli) into use cases
+- [x] Implement API transport
+- [ ] Fix update entry bug
+- [ ] Add a config.go for DI
 
 # Wishlist
 
