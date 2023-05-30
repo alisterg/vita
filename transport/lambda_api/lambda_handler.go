@@ -17,6 +17,12 @@ var entryTypeRepo repositories.EntryTypeRepository
 var entryRepo repositories.EntryRepository
 var routineRepo repositories.RoutineRepository
 
+var corsHeaders = map[string]string{
+	"Access-Control-Allow-Headers": "Content-Type",
+	"Access-Control-Allow-Origin":  "*",
+	"Access-Control-Allow-Methods": "*",
+}
+
 func LambdaHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// CHANGE THESE IF YOU WISH TO CHANGE THE DATA SOURCE
 	entryTypeRepo = dynamo.EntryTypesDynamoRepo{}
@@ -61,6 +67,7 @@ func handleGetRequest(event events.APIGatewayProxyRequest) (events.APIGatewayPro
 
 	response := events.APIGatewayProxyResponse{
 		Body:       jsonResult,
+		Headers:    corsHeaders,
 		StatusCode: 200,
 	}
 	return response, nil
@@ -95,6 +102,7 @@ func handlePostRequest(event events.APIGatewayProxyRequest) (events.APIGatewayPr
 	}
 
 	response := events.APIGatewayProxyResponse{
+		Headers:    corsHeaders,
 		StatusCode: 201,
 	}
 	return response, nil
@@ -125,6 +133,7 @@ func handlePutRequest(event events.APIGatewayProxyRequest) (events.APIGatewayPro
 	}
 
 	response := events.APIGatewayProxyResponse{
+		Headers:    corsHeaders,
 		StatusCode: 204,
 	}
 
@@ -154,6 +163,7 @@ func handleDeleteRequest(event events.APIGatewayProxyRequest) (events.APIGateway
 	}
 
 	response := events.APIGatewayProxyResponse{
+		Headers:    corsHeaders,
 		StatusCode: 204,
 	}
 	return response, nil
