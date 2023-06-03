@@ -38,6 +38,8 @@ func LambdaHandler(ctx context.Context, event events.APIGatewayProxyRequest) (ev
 		return handlePutRequest(event)
 	case http.MethodDelete:
 		return handleDeleteRequest(event)
+	case http.MethodOptions:
+		return events.APIGatewayProxyResponse{StatusCode: 200, Headers: corsHeaders}, nil
 	default:
 		return events.APIGatewayProxyResponse{}, fmt.Errorf("method not allowed")
 	}
