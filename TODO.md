@@ -3,7 +3,7 @@
 - [x] Cloud infrastructure
 - [x] CLI app
 - [x] API
-- [ ] Mobile app
+- [x] Mobile app
 
 # Todo
 
@@ -22,7 +22,7 @@
 - [x] Add entry_types and routines dynamo adapters
 - [x] Implement API transport
 - [ ] Fix update entry bug
-- [ ] Add a config.go for DI
+- [ ] 'Dao' report
 
 # Wishlist
 

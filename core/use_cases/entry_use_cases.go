@@ -65,6 +65,8 @@ func UpdateEntryFromJson(entryRepo repositories.EntryRepository, entryJson strin
 		return err
 	}
 
+	// TODO: this is assigning a new uuid, how is it supposed to update an existing one
+
 	entry := entities.EntryFactory(entryDto.EntryType, entryDto.EntryData)
 
 	err2 := entryRepo.UpdateEntry(entry)
